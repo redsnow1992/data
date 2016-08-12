@@ -21,8 +21,8 @@ def deal_a_site(url, file)
   begin
     doc = Nokogiri::HTML(open(url, read_timeout: 30))
     doc.css(".rightTxtHead").each do |line|
-      name = line.children[0].attributes["title"].value.gsub("\"", "")
-      domain = line.children[1].text
+      name = line.children[0].attributes["title"].value.gsub("\"", "").strip
+      domain = line.children[1].text.strip
       link = File.join(home, line.children[0].attributes["href"].value)
       info = extract_site_info(link)
       record = ([name, domain] + info).join("\t")
