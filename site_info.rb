@@ -17,15 +17,21 @@ end
 
 def deal_a_site(url, file)
   home = "http://top.chinaz.com"
-  doc = Nokogiri::HTML(open(url))
-  doc.css(".rightTxtHead").each do |line|
-    name = line.children[0].attributes["title"].value.gsub("\"", "")
-    domain = line.children[1].text
-    link = File.join(home, line.children[0].attributes["href"].value)
-    info = extract_site_info(link)
-    record = ([name, domain] + info).join("\t")
-    puts record
-    file.puts record
+  count = 3
+  begin
+    doc = Nokogiri::HTML(open(url, read_timeout: 30))
+    doc.css(".rightTxtHead").each do |line|
+      name = line.children[0].attributes["title"].value.gsub("\"", "")
+      domain = line.children[1].text
+      link = File.join(home, line.children[0].attributes["href"].value)
+      info = extract_site_info(link)
+      record = ([name, domain] + info).join("\t")
+      puts record
+      file.puts record
+    end
+  rescue
+    count -= 1
+    retry if count > 0
   end
 end
 
